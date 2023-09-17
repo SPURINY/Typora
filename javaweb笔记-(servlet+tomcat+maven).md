@@ -539,3 +539,288 @@ public class ServletDemo4luanMa extends HttpServlet {
 
 ![image-20230905202109390](images/image-20230905202109390.png)
 
+# 三、myBatis
+
+## 1.简介
+
+- 一款持久层框架，用于简化JDBC开发
+  - 持久层：连接数据库的那层代码
+  - javaEE三层架构：表现层、业务层、持久层
+
+
+
+## 2.快速入门案例
+
+![image-20230917123414520](images/image-20230917123414520.png)
+
+- 1.用的navicat创建了tb_user表，并插入了数据。
+
+  - <img src="images/image-20230917185057675.png" alt="image-20230917185057675" style="zoom:67%;" />
+  - 点上边“DDL”可查看当时创建时的sql（虽然被魔改了
+
+- 2.创建maven项目，pom.xml中各种导依赖
+
+  - ```xml
+    <dependencies>
+        <dependency>       <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.46</version>
+        </dependency>
+        <!--junit单元测试-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    ```
+
+- 3.<u>**resources目录下建**</u>mybatis核心配置文件(mybatis-config.xml)【从官网复制的，然后把property改成自己的信息--数据库连接信息】
+
+  - 一改property
+
+  - 二改mappers【加载sql映射文件(别的xml)】
+
+  - ```xml
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <!DOCTYPE configuration
+            PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+            "https://mybatis.org/dtd/mybatis-3-config.dtd">
+    <configuration>
+        <environments default="development">
+            <environment id="development">
+                <transactionManager type="JDBC"/>
+                <dataSource type="POOLED">
+                    <!--数据库连接信息-->
+                    <property name="driver" value="com.mysql.jdbc.Driver"/>
+                    <property name="url" value="jdbc:mysql:///mybatis?useSSL=false"/>
+                    <property name="username" value="root"/>
+                    <property name="password" value="666"/>
+                </dataSource>
+            </environment>
+        </environments>
+        <mappers>
+            <!--加载sql映射文件-->
+            <!--因为本xml文件和UserMapper.xml文件在一个目录下∴可以直接写路径写成“UserMapper.xml”-->
+            <mapper resource="UserMapper.xml"/>
+        </mappers>
+    </configuration>
+    ```
+
+- 4.编写sql映射文件【官网copy的，只改了< mapper>里的东西和标签的属性】
+
+  - - <!--命名空间，用于标识，相当于包名-->
+
+    - <!--id是该sql语句的唯一标识，可通过其使用对应sql语句-->  E.G.:xxnamespace.xxid就能唯一标识一个
+    - <!--数据封装成resulType的类型--> 即**返回值类型**
+    - 同理< insert>tag内可写insert语句
+
+  - ```xml
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <!DOCTYPE mapper
+            PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+            "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <!--命名空间，用于标识，相当于包名-->
+    <mapper namespace="test">
+            <!--id是该sql语句的唯一标识，可通过其使用对应sql语句-->
+            <!--数据封装成resulType的类型-->
+        <select id="selectAll" resultType="com.pojo.User">
+            select * from tb_user ;
+        </select>
+    
+    </mapper>
+    ```
+
+- 5.编码
+
+  - ①定义pojo类：java目录下new类，写“com.pojp.User”-->IDEA就给**创好了包和类**
+
+    - 根据数据库表的字段写User类的属性
+    - tips：**<u>alt+鼠标下划一个区域就能选中一条线之后的所有内容</u>**【可方便删
+      - <img src="images/image-20230917190732065.png" alt="image-20230917190732065" style="zoom:50%;" />
+      - 也可实现同时写多行<img src="images/image-20230917190822768.png" alt="image-20230917190822768" style="zoom:50%;" />
+
+  - 在“com.demo.java”路径new一个测试类，
+
+  - +②加载核心配置文件，获取SqlSessionFactory对象【官网copy
+
+    - 因为mybatis-config.xml在resources路径下，所以可以直接写文件名
+
+    - ```java
+      //1.加载mybatis核心配置文件，获取SqlSessionFactory对象（从官网复制的
+      String resource = "mybatis-config.xml";
+      InputStream inputStream = Resources.getResourceAsStream(resource);
+      SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+      ```
+
+  - ③获取sqlSession对象（可用于执行sql语句
+
+    - ```java
+      SqlSession sqlSession=sqlSessionFactory.openSession();
+      ```
+
+  - ④执行sql语句
+
+    - ***alt+enter自动引导，即等号及左边都是自动生成的*** 
+
+    - ```java
+      //3.执行sql语句         (alt+enter自动引导，即等号及左边都是自动生成的
+      List<User> users = sqlSession.selectList("test.selectAll");
+      ```
+
+  - ⑤释放资源
+
+    - ```
+      //4.释放资源
+      sqlSession.close();
+      ```
+
+-------------------------完整的测试类代码↓-----------
+
+```java
+/***
+ * 测试类
+ * mybatis快速入门
+ */
+
+public class MybatisDemo {
+    public static void main(String []args)  throws IOException {
+        //1.加载mybatis核心配置文件，获取SqlSessionFactory对象（从官网复制的
+        String resource = "mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        //2.获取SqlSession对象(用它执行sql语句
+        SqlSession sqlSession=sqlSessionFactory.openSession();
+        //3.执行sql语句         (alt+enter自动引导，即等号及左边都是自动生成的
+        List<User> users = sqlSession.selectList("test.selectAll");//test.selectAll可唯一标识
+        System.out.println(users);
+        //4.释放资源
+        sqlSession.close();
+    }
+}
+```
+
+结果：![image-20230917191728511](images/image-20230917191728511.png)
+
+
+
+
+
+## 3.Mapper代理开发
+
+引入：
+
+<img src="images/image-20230917200246890.png" alt="image-20230917200246890" style="zoom:67%;" />
+
+代码中还是有写死的地方("硬编码")，且需要切回xml文件看名字。
+
+优化成method，直接用<img src="images/image-20230917200502727.png" alt="image-20230917200502727" style="zoom:50%;" />
+
+
+
+### tips1：target目录
+
+<img src="images/image-20230917193226300.png" alt="image-20230917193226300" style="zoom: 50%;" />
+
+**<u>xml文件在resources目录下，</u>**编译(compile)后生成target文件夹，
+
+<img src="images/image-20230917193400804.png" alt="image-20230917193400804" style="zoom:50%;" /><img src="images/image-20230917193459178.png" alt="image-20230917193459178" style="zoom:33%;" />
+
+可知，在classes文件夹中，各配置xml和com包在一个目录下
+
+
+
+### tips2：resourcs目录下建包
+
+- 已知在java代码目录下建包belike：<img src="images/image-20230917193747765.png" alt="image-20230917193747765" style="zoom: 50%;" />
+
+
+
+- 但在resouces目录下建包用“ `.` ”无法识别，<u>用“`/`”：</u><img src="images/image-20230917194038424.png" alt="image-20230917194038424" style="zoom: 67%;" />
+  - 结果：<img src="images/image-20230917194218711.png" alt="image-20230917194218711" style="zoom:50%;" />
+  - 重新编译后(需要对java代码改动才能重新compile)
+    - <img src="images/image-20230917194351359.png" alt="image-20230917194351359" style="zoom:67%;" />
+    - ***<u>通过在resous目录下建类的同名包-->把xml文件和java类放到了同一个目录中</u>***
+
+
+
+### 步骤
+
+<img src="images/image-20230917200619400.png" alt="image-20230917200619400" style="zoom:67%;" />
+
+1. ①定义sql映射文件**同名**的Mapper**接口** (接口习惯上放在单独一个包里)
+
+   <img src="images/image-20230917201130322.png" alt="image-20230917201130322" style="zoom: 50%;" /><img src="images/image-20230917201204213.png" alt="image-20230917201204213" style="zoom:50%;" />
+
+   
+
+   ②用tips2的原理建一个包，把UserMapper.xml放进去-->实现了在同一目录下
+
+   <img src="images/image-20230917201551671.png" alt="image-20230917201551671" style="zoom:50%;" /><img src="images/image-20230917201604820.png" alt="image-20230917201604820" style="zoom:50%;" />
+
+   <img src="images/image-20230917201628696.png" alt="image-20230917201628696" style="zoom:50%;" />
+
+   编译后：<img src="images/image-20230917201803211.png" alt="image-20230917201803211" style="zoom:50%;" />
+
+2. 把sql映射文件(UserMapper.xml文件)的namespace属性设置为 自己定义的mapper接口的全限定名
+
+```xml
+<mapper namespace="com.mapper.UserMapper">
+```
+
+3. 在mapper接口中定义方法（方法化），方法名=sql语句的id；返回值类型=resultType的类型；
+
+   <img src="images/image-20230917202819462.png" alt="image-20230917202819462" style="zoom:50%;" />
+
+- 由UserMapper.xml可知，UserMapper接口应定义selectAll方法，返回值类型为User对象--` User selectAll();`
+
+- 但是由sql语句可知：**查询的是所有用户，即返回多个user一个list**---》List<User>
+
+  ```java
+  List<User> selectAll();
+  ```
+
+ps.由于UserMapper.xml路径改到包底下了，mybatis-config.xml中加载它的路径需要修改<img src="images/image-20230917203653348.png" alt="image-20230917203653348" style="zoom: 50%;" />
+
+
+
+4.编码（写个测试类
+
+前几步和入门案例一样，区别只在运行sql那段
+
+```java
+/***
+ * 测试类
+ * Mapper代理开发入门
+ */
+
+public class MybatisDemo2 {
+    public static void main(String []args)  throws IOException {
+        //1.加载mybatis核心配置文件，获取SqlSessionFactory对象（从官网复制的
+        String resource = "mybatis-config.xml";
+        InputStream inputStream = Resources.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        //2.获取SqlSession对象(用它执行sql语句
+        SqlSession sqlSession=sqlSessionFactory.openSession();
+        //3.执行sql语句         (alt+enter自动引导，即等号及左边都是自动生成的
+        //List<User> users = sqlSession.selectList("test.selectAll");
+        //3.1把UserMapper接口类型传进去，获取一个代理接口
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        //3.2通过代理接口调用方法
+        List<User> users = userMapper.selectAll();
+        System.out.println(users);
+        //4.释放资源
+        sqlSession.close();
+    }
+}
+```
+
+
+
+- 梳理思路:通过sqlSession对象的getMapper()获取一个UserMapper接口，而UserMapper接口的路径下有同名的sql映射文件(UserMapper.xml),<img src="images/image-20230917205849960.png" alt="image-20230917205849960" style="zoom: 50%;" />
+  - 通过该代理**接口调用方法**，而3.规定“<u>**方法名=sql语句的id**</u>”,即<u>通过方法能对应id同名的sql语句</u>，其实底层原理还是入门案例的那样

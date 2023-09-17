@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间，用于标识，相当于包名-->
+<mapper namespace="com.mapper.UserMapper">
+        <!--id是该sql语句的唯一标识，可通过其使用对应sql语句-->
+        <!--数据封装成resulType的类型-->
+    <select id="selectAll" resultType="com.pojo.User">
+        select * from tb_user ;
+    </select>
+
+</mapper>
