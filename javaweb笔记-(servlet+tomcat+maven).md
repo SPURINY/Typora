@@ -12,13 +12,13 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 
 ### 1.启动
 
-![image-20230903160713332](D:\学习资料\笔记\images\image-20230903160713332.png)
+![image-20230903160713332](images/image-20230903160713332.png)
 
 正常关闭比较好，涉及资源释放
 
 ### 2.修改配置
 
-- <img src="D:\学习资料\笔记\images\image-20230903161548750.png" alt="image-20230903161548750" style="zoom:67%;" />
+- <img src="images/image-20230903161548750.png" alt="image-20230903161548750" style="zoom:67%;" />
 - 如果打不开，原因可能是**没启动tomcat**。而且修改了之后需要重新启动tomcat。
 - tomcat是用java写的，所以电脑要配置java_home
 
@@ -26,23 +26,23 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 
 把文件夹or war包复制到webapps里
 
-![image-20230903182832116](D:\学习资料\笔记\images\image-20230903182832116.png)
+![image-20230903182832116](images/image-20230903182832116.png)
 
 ### 4.IDEA中创建maven web 项目
 
 
 
-![image-20230903183942522](D:\学习资料\笔记\images\image-20230903183942522.png)
+![image-20230903183942522](images/image-20230903183942522.png)
 
 #### 4.1用骨架建
 
-![image-20230903184932927](D:\学习资料\笔记\images\image-20230903184932927.png)
+![image-20230903184932927](images/image-20230903184932927.png)
 
-![image-20230903184955400](D:\学习资料\笔记\images\image-20230903184955400.png)
+![image-20230903184955400](images/image-20230903184955400.png)
 
-![image-20230903185057859](D:\学习资料\笔记\images\image-20230903185057859.png)
+![image-20230903185057859](images/image-20230903185057859.png)
 
-![image-20230903185133054](D:\学习资料\笔记\images\image-20230903185133054.png)
+![image-20230903185133054](images/image-20230903185133054.png)
 
 ```html
 <packageing>war</packaging>
@@ -50,7 +50,7 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 *默认是jar
 ```
 
-#### 4.2不用骨架![image-20230903185706806](D:\学习资料\笔记\images\image-20230903185706806.png)
+#### 4.2不用骨架![image-20230903185706806](images/image-20230903185706806.png)
 
 
 
@@ -58,24 +58,24 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 
 配置tomcat
 
-- ![image-20230903190207305](D:\学习资料\笔记\images\image-20230903190207305.png)
-- ![image-20230903190230124](D:\学习资料\笔记\images\image-20230903190230124.png)
+- ![image-20230903190207305](images/image-20230903190207305.png)
+- ![image-20230903190230124](images/image-20230903190230124.png)
 - server自己选下载目录
 
 
 
 部署项目到tomcat上
 
-- <img src="D:\学习资料\笔记\images\image-20230903190336591.png" alt="image-20230903190336591" style="zoom:67%;" />
+- <img src="images/image-20230903190336591.png" alt="image-20230903190336591" style="zoom:67%;" />
 
-- <img src="D:\学习资料\笔记\images\image-20230903190444399.png" alt="image-20230903190444399" style="zoom: 50%;" />
+- <img src="images/image-20230903190444399.png" alt="image-20230903190444399" style="zoom: 50%;" />
 - 最后部署失败，，因为名字里有下划线，然后我就把已经部署的项目全去掉了，只加了新创建的项目
 
 启动项目
 
-- <img src="D:\学习资料\笔记\images\image-20230903192251702.png" alt="image-20230903192251702" style="zoom:50%;" />
-- 自动访问到这个地址：<img src="D:\学习资料\笔记\images\image-20230903192328484.png" alt="image-20230903192328484" style="zoom:50%;" />
-- 在地址栏输入相对路径a.html即可访问a.html：<img src="D:\学习资料\笔记\images\image-20230903192426714.png" alt="image-20230903192426714" style="zoom:50%;" />
+- <img src="images/image-20230903192251702.png" alt="image-20230903192251702" style="zoom:50%;" />
+- 自动访问到这个地址：<img src="images/image-20230903192328484.png" alt="image-20230903192328484" style="zoom:50%;" />
+- 在地址栏输入相对路径a.html即可访问a.html：<img src="images/image-20230903192426714.png" alt="image-20230903192426714" style="zoom:50%;" />
 
 ### 6.IDEA中用tomcat-maven插件部署项目
 
@@ -92,7 +92,7 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
      </build>
   ```
 
-- <img src="D:\学习资料\笔记\images\image-20230903194033581.png" alt="image-20230903194033581" style="zoom:67%;" />
+- <img src="images/image-20230903194033581.png" alt="image-20230903194033581" style="zoom:67%;" />
 
 - 如果右键没有"tomcat7:run"，[Maven Helper插件右键没有tomcat7:run 的解决方法_灵sa的博客-CSDN博客](https://blog.csdn.net/qq_48842471/article/details/128524227)
 
@@ -100,9 +100,9 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 
 ## 2.maven
 
-![image-20230903164445383](D:\学习资料\笔记\images\image-20230903164445383.png)
+![image-20230903164445383](images/image-20230903164445383.png)
 
-### 1.maven默认的仓库地址![image-20230903165839085](D:\学习资料\笔记\images\image-20230903165839085.png)
+### 1.maven默认的仓库地址![image-20230903165839085](images/image-20230903165839085.png)
 
 因为在c盘，所以最好自己建一个
 
@@ -116,13 +116,13 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 - package：打包 在target文件夹中
 - install：安装  下载到本地仓库文件夹
 
-<img src="D:\学习资料\笔记\images\image-20230903171610089.png" alt="image-20230903171610089" style="zoom:67%;" />
+<img src="images/image-20230903171610089.png" alt="image-20230903171610089" style="zoom:67%;" />
 
 在项目目录下用命令
 
 ### 3.maven生命周期
 
-![image-20230903172000239](D:\学习资料\笔记\images\image-20230903172000239.png)
+![image-20230903172000239](images/image-20230903172000239.png)
 
 **同一生命周期内**，才会在执行后便命令时自动把本声明周期内前边的也执行了。E.G.执行install时，会自动执行compile,test,package（体现为多了targe文件夹&jar包等等
 
@@ -132,19 +132,19 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 
 坐标
 
-![image-20230903172902923](D:\学习资料\笔记\images\image-20230903172902923.png)
+![image-20230903172902923](images/image-20230903172902923.png)
 
 2022版创建maven项目：
 
-![image-20230903173731442](D:\学习资料\笔记\images\image-20230903173731442.png)
+![image-20230903173731442](images/image-20230903173731442.png)
 
-<img src="D:\学习资料\笔记\images\image-20230903173757584.png" alt="image-20230903173757584" style="zoom:67%;" />
+<img src="images/image-20230903173757584.png" alt="image-20230903173757584" style="zoom:67%;" />
 
 
 
 导入maven文件：
 
-<img src="D:\学习资料\笔记\images\image-20230903174151959.png" alt="image-20230903174151959" style="zoom:67%;" />
+<img src="images/image-20230903174151959.png" alt="image-20230903174151959" style="zoom:67%;" />
 
 
 
@@ -154,15 +154,15 @@ web服务器：写的网站在web服务器上运行，相当于容器。如tomca
 
 在pom.xml中写<u>**依赖坐标**</u>（就不用自己导包了）
 
-<img src="D:\学习资料\笔记\images\image-20230903174930600.png" alt="image-20230903174930600" style="zoom:67%;" />
+<img src="images/image-20230903174930600.png" alt="image-20230903174930600" style="zoom:67%;" />
 
-点刷新开始下载【写完or删完刷新】![image-20230903175008024](D:\学习资料\笔记\images\image-20230903175008024.png)
+点刷新开始下载【写完or删完刷新】![image-20230903175008024](images/image-20230903175008024.png)
 
 ------
 
 依赖范围：
 
-![image-20230903175830230](D:\学习资料\笔记\images\image-20230903175830230.png)
+![image-20230903175830230](images/image-20230903175830230.png)
 
 
 
@@ -267,7 +267,7 @@ public class myServlet implements Servlet {//ctrl+o重写父类方法
 
 p.s若文件夹中无法new JAVA class，可右键
 
-<img src="D:\学习资料\笔记\images\image-20230903231020117.png" alt="image-20230903231020117" style="zoom:50%;" />
+<img src="images/image-20230903231020117.png" alt="image-20230903231020117" style="zoom:50%;" />
 
 ## 3.执行流程
 
@@ -275,9 +275,9 @@ servlet对象由web服务器创建，并调用方法。
 
 ## 4.生命周期
 
-<img src="D:\学习资料\笔记\images\image-20230905162543769.png" alt="image-20230905162543769" style="zoom: 67%;" />
+<img src="images/image-20230905162543769.png" alt="image-20230905162543769" style="zoom: 67%;" />
 
-![image-20230905162631767](D:\学习资料\笔记\images\image-20230905162631767.png)
+![image-20230905162631767](images/image-20230905162631767.png)
 
 - ②相当于提前了servlet对象创建的时间
 
@@ -327,16 +327,16 @@ public class servletDemo01 implements Servlet {
 
 运行结果：按照“/sy”路径访问时（且刷新只调用了service，**init只调用一次**）
 
-<img src="D:\学习资料\笔记\images\image-20230905170458009.png" alt="image-20230905170458009" style="zoom:67%;" />
+<img src="images/image-20230905170458009.png" alt="image-20230905170458009" style="zoom:67%;" />
 
 销毁：需要正常关闭-->ctrl+c
 
-- 利用terminal启动<img src="D:\学习资料\笔记\images\image-20230905170705103.png" alt="image-20230905170705103" style="zoom:50%;" />
+- 利用terminal启动<img src="images/image-20230905170705103.png" alt="image-20230905170705103" style="zoom:50%;" />
 - ctrl+c结束 -->调用destroy
 
 ## 5.servlet方法
 
-<img src="D:\学习资料\笔记\images\image-20230905171242093.png" alt="image-20230905171242093" style="zoom:67%;" />
+<img src="images/image-20230905171242093.png" alt="image-20230905171242093" style="zoom:67%;" />
 
 ```java
 @Override
@@ -352,12 +352,12 @@ public class servletDemo01 implements Servlet {
 
 - 观察可知getServletConfig()返回一个ServletConfig类，且init()形参里有ServletConfig类----》**想在getServletConfig()里直接用init()类里的局部变量**--------》**扩大其作用域**
 - - <img src="C:\Users\purin\AppData\Roaming\Typora\typora-user-images\image-20230905171629861.png" alt="image-20230905171629861" style="zoom:50%;" />`定义私有成员config`
-  - <img src="D:\学习资料\笔记\images\image-20230905171652577.png" alt="image-20230905171652577" style="zoom:50%;" />用形参给私有成员config赋值
-  - <img src="D:\学习资料\笔记\images\image-20230905171717789.png" alt="image-20230905171717789" style="zoom:50%;" />返回私有成员
+  - <img src="images/image-20230905171652577.png" alt="image-20230905171652577" style="zoom:50%;" />用形参给私有成员config赋值
+  - <img src="images/image-20230905171717789.png" alt="image-20230905171717789" style="zoom:50%;" />返回私有成员
 
 ## 6.servlet体系结构
 
-<img src="D:\学习资料\笔记\images\image-20230905172216846.png" alt="image-20230905172216846" style="zoom: 50%;" />
+<img src="images/image-20230905172216846.png" alt="image-20230905172216846" style="zoom: 50%;" />
 
 - 开发B/S架构的web项目，都是针对HTTP协议，所以自定义**继承HttpServlet**的Servlet类
 
@@ -365,9 +365,9 @@ public class servletDemo01 implements Servlet {
 
 get：
 
-<img src="D:\学习资料\笔记\images\image-20230905173053182.png" alt="image-20230905173053182" style="zoom:50%;" />
+<img src="images/image-20230905173053182.png" alt="image-20230905173053182" style="zoom:50%;" />
 
-<img src="D:\学习资料\笔记\images\image-20230905173104761.png" alt="image-20230905173104761" style="zoom:50%;" />
+<img src="images/image-20230905173104761.png" alt="image-20230905173104761" style="zoom:50%;" />
 
 post：
 
@@ -385,9 +385,9 @@ post：
 </html>
 ```
 
-②<img src="D:\学习资料\笔记\images\image-20230905173952234.png" alt="image-20230905173952234" style="zoom:67%;" />
+②<img src="images/image-20230905173952234.png" alt="image-20230905173952234" style="zoom:67%;" />
 
-③随便写点点提交后，以post的方式访问demo02了。控制台：<img src="D:\学习资料\笔记\images\image-20230905174105047.png" alt="image-20230905174105047" style="zoom:67%;" />
+③随便写点点提交后，以post的方式访问demo02了。控制台：<img src="images/image-20230905174105047.png" alt="image-20230905174105047" style="zoom:67%;" />
 
 
 
@@ -395,7 +395,7 @@ post：
 
 urlPatterns匹配方式
 
-<img src="D:\学习资料\笔记\images\image-20230905175406502.png" alt="image-20230905175406502" style="zoom:67%;" />
+<img src="images/image-20230905175406502.png" alt="image-20230905175406502" style="zoom:67%;" />
 
 
 
@@ -405,13 +405,13 @@ urlPatterns匹配方式
 
 ### 7.1request继承体系
 
-![image-20230905180239098](D:\学习资料\笔记\images\image-20230905180239098.png)
+![image-20230905180239098](images/image-20230905180239098.png)
 
-![image-20230905180709056](D:\学习资料\笔记\images\image-20230905180709056.png)
+![image-20230905180709056](images/image-20230905180709056.png)
 
 ### 7.2获取请求数据
 
-![image-20230905181824430](D:\学习资料\笔记\images\image-20230905181824430.png)
+![image-20230905181824430](images/image-20230905181824430.png)
 
 - get方式获取请求参数：用getQueryString()
 
@@ -419,9 +419,9 @@ urlPatterns匹配方式
 
 - request***通用的请求参数方法***①(在**doPost,doGet都能用**)
 
-  - ![image-20230905184136025](D:\学习资料\笔记\images\image-20230905184136025.png)
+  - ![image-20230905184136025](images/image-20230905184136025.png)
   - 参数是形如“username=lihua&hobby=1&hobby=2”的形式。request把各个分离出来，利用map**集合**(key，value)存储，key数据类型为string，value类型为string[]
-  - ![image-20230905184414188](D:\学习资料\笔记\images\image-20230905184414188.png)
+  - ![image-20230905184414188](images/image-20230905184414188.png)
 
   
 
@@ -458,19 +458,19 @@ urlPatterns匹配方式
 </html>
 ```
 
-流程：访问a1.html,提交后![image-20230905190820649](D:\学习资料\笔记\images\image-20230905190820649.png)terminal显示![image-20230905190754281](D:\学习资料\笔记\images\image-20230905190754281.png)
+流程：访问a1.html,提交后![image-20230905190820649](images/image-20230905190820649.png)terminal显示![image-20230905190754281](images/image-20230905190754281.png)
 
-2.根据key返回<img src="D:\学习资料\笔记\images\image-20230905190959501.png" alt="image-20230905190959501" style="zoom:67%;" />
+2.根据key返回<img src="images/image-20230905190959501.png" alt="image-20230905190959501" style="zoom:67%;" />
 
 - get、post**通用请求参数方法②**
   - 在doPost中调用doGet
-  - ![image-20230905191357735](D:\学习资料\笔记\images\image-20230905191357735.png)
+  - ![image-20230905191357735](images/image-20230905191357735.png)
 
 ### 7.3请求转发
 
-<img src="D:\学习资料\笔记\images\image-20230905200951517.png" alt="image-20230905200951517" style="zoom: 50%;" />
+<img src="images/image-20230905200951517.png" alt="image-20230905200951517" style="zoom: 50%;" />
 
-<img src="D:\学习资料\笔记\images\image-20230905201108474.png" alt="image-20230905201108474" style="zoom:50%;" />
+<img src="images/image-20230905201108474.png" alt="image-20230905201108474" style="zoom:50%;" />
 
 
 
@@ -478,17 +478,17 @@ urlPatterns匹配方式
 
 ### 8.1GET
 
-![image-20230905200021643](D:\学习资料\笔记\images\image-20230905200021643.png)
+![image-20230905200021643](images/image-20230905200021643.png)
 
 ### 8.2POST
 
-![image-20230905192253199](D:\学习资料\笔记\images\image-20230905192253199.png)
+![image-20230905192253199](images/image-20230905192253199.png)
 
 **<u>历史遗留问题：</u>**
 
 应该第一行乱码，第二行汉字，但terminal两行一样，且都是不认识的字符，也没搜出来是什么编码方式。。。。。
 
-![image-20230905200302424](D:\学习资料\笔记\images\image-20230905200302424.png)
+![image-20230905200302424](images/image-20230905200302424.png)
 
 a1.html
 
@@ -535,7 +535,7 @@ public class ServletDemo4luanMa extends HttpServlet {
 
 ## 9.reponse
 
-![image-20230905201227868](D:\学习资料\笔记\images\image-20230905201227868.png)
+![image-20230905201227868](images/image-20230905201227868.png)
 
-![image-20230905202109390](D:\学习资料\笔记\images\image-20230905202109390.png)
+![image-20230905202109390](images/image-20230905202109390.png)
 

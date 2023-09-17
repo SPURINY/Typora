@@ -4,15 +4,15 @@
 
 ## 1.报错集：
 
-1.![image-20230916174613321](D:\学习资料\笔记\images\image-20230916174613321.png)
+1.![image-20230916174613321](images\image-20230916174613321.png)
 
 一开始class属性爆红，cannot resolve class or package ppr和cannot resolve class Car
 
-solution:一开始用的ppr.Car当<img src="D:\学习资料\笔记\images\image-20230916174738428.png" alt="image-20230916174738428" style="zoom:50%;" />，因为建包的时候右键new没有package
+solution:一开始用的ppr.Car当<img src="images\image-20230916174738428.png" alt="image-20230916174738428" style="zoom:50%;" />，因为建包的时候右键new没有package
 
-- 在蓝色文件夹(Sources Root)右键就可以建包了<img src="D:\学习资料\笔记\images\image-20230916174913472.png" alt="image-20230916174913472" style="zoom: 50%;" />
+- 在蓝色文件夹(Sources Root)右键就可以建包了<img src="images\image-20230916174913472.png" alt="image-20230916174913472" style="zoom: 50%;" />
 
-2.![image-20230916180344013](D:\学习资料\笔记\images\image-20230916180344013.png)
+2.![image-20230916180344013](images\image-20230916180344013.png)
 
 solution:
 
@@ -22,17 +22,17 @@ solution:
 
 
 
-3.![image-20230916190123485](D:\学习资料\笔记\images\image-20230916190123485.png)
+3.![image-20230916190123485](images\image-20230916190123485.png)
 
 solution:可以看出我写错地方了(classes\spring.xml)，写在”java\spring.xml“就解决了
 
 
 
-4.<img src="D:\学习资料\笔记\images\image-20230917101907146.png" alt="image-20230917101907146" style="zoom:67%;" />
+4.<img src="images\image-20230917101907146.png" alt="image-20230917101907146" style="zoom:67%;" />
 
 solution：漏了对括号
 
-![image-20230917101935586](D:\学习资料\笔记\images\image-20230917101935586.png)
+![image-20230917101935586](images\image-20230917101935586.png)
 
 
 
@@ -40,7 +40,7 @@ solution：漏了对括号
 
 ### 1.Dependency injection
 
-<img src="D:\学习资料\笔记\images\image-20230916180653253.png" alt="image-20230916180653253" style="zoom:33%;" />
+<img src="images\image-20230916180653253.png" alt="image-20230916180653253" style="zoom:33%;" />
 
 ```xml
     <dependency>
@@ -90,7 +90,7 @@ public class App {
 
 ```
 
-![image-20230916180822507](D:\学习资料\笔记\images\image-20230916180822507.png)
+![image-20230916180822507](images\image-20230916180822507.png)
 
 - `ApplicationContext context= new ClassPathXmlApplicationContext("spring.xml");`
          `Vehicle vehicle=(Vehicle) context.getBean("vehicle");`//objext->Vehicle
@@ -174,7 +174,7 @@ public class AppConfig {
 }
 ```
 
-![image-20230917100602103](D:\学习资料\笔记\images\image-20230917100602103.png)
+![image-20230917100602103](images\image-20230917100602103.png)
 
 - ```
   ApplicationContext factory= new AnnotationConfigApplicationContext(AppConfig.class);
@@ -241,12 +241,12 @@ public class BestProcessor implements Processor{
 }
 ```
 
-![image-20230917102248712](D:\学习资料\笔记\images\image-20230917102248712.png)
+![image-20230917102248712](images\image-20230917102248712.png)
 
 - 由报错可知：AppConfig类的getCpu()并没能把new的对象给传过去。
 - - <u>***@Autowired**</u>*
 
-- <img src="D:\学习资料\笔记\images\image-20230917102552600.png" alt="image-20230917102552600" style="zoom:67%;" />
+- <img src="images\image-20230917102552600.png" alt="image-20230917102552600" style="zoom:67%;" />
 
 
 
@@ -310,13 +310,13 @@ public class BestProcessor implements Processor{
 - <u>**solution1：@Primary**</u>
 - - 指明两个实现类谁的优先级更高，即new该类的bean
   - 使用与 `@Primary` 注释关联的 **bean** 。
-  - ![image-20230917105520476](D:\学习资料\笔记\images\image-20230917105520476.png)
+  - ![image-20230917105520476](images\image-20230917105520476.png)
 
 
 
 - **<u>solution2：@Qualifier("bean的id")</u>**
   - 自动装配(@Autowired)的时候
-  - <img src="D:\学习资料\笔记\images\image-20230917110402193.png" alt="image-20230917110402193" style="zoom:67%;" />
+  - <img src="images\image-20230917110402193.png" alt="image-20230917110402193" style="zoom:67%;" />
   - ps：一开始写的SecondP...报错，改小写(默认bean的id)就ok了
   - <img src="C:\Users\purin\AppData\Roaming\Typora\typora-user-images\image-20230917110529776.png" alt="image-20230917110529776" style="zoom:67%;" />
 
