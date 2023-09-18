@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
@@ -19,5 +20,6 @@
         <!--加载sql映射文件-->
         <!--因为本xml文件和UserMapper.xml文件在一个目录下∴可以直接写路径写成“UserMapper.xml”-->
         <mapper resource="com/mapper/UserMapper.xml"/>
+        <mapper resource="com/mapper/BrandMapper.xml"/>
     </mappers>
 </configuration>
