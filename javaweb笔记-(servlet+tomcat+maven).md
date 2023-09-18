@@ -824,3 +824,123 @@ public class MybatisDemo2 {
 
 - 梳理思路:通过sqlSession对象的getMapper()获取一个UserMapper接口，而UserMapper接口的路径下有同名的sql映射文件(UserMapper.xml),<img src="images/image-20230917205849960.png" alt="image-20230917205849960" style="zoom: 50%;" />
   - 通过该代理**接口调用方法**，而3.规定“<u>**方法名=sql语句的id**</u>”,即<u>通过方法能对应id同名的sql语句</u>，其实底层原理还是入门案例的那样
+
+
+
+## 4.案例-配置文件实现CRUD
+
+### 黑马官方note
+
+[Mybatis：使用映射配置文件实现CRUD操作，能够使用注解实现CRUD操作_数据注解进行映射配置的方式_黑马程序员官方的博客-CSDN博客](https://blog.csdn.net/itcast_cn/article/details/123718088)
+
+功能列表：
+
+> - 查询
+>   - 查询所有数据
+>   - 查询详情
+>   - 条件查询
+> - 添加
+> - 修改
+>   - 修改全部字段
+>   - 修改动态字段
+> - 删除
+>   - 删除一个
+>   - 批量删除
+
+### 4.1准备环境
+
+<img src="images/image-20230918213919973.png" alt="image-20230918213919973" style="zoom:33%;" />
+
+### 1.查询所有数据
+
+<img src="images/image-20230918221556486.png" alt="image-20230918221556486" style="zoom: 33%;" />
+
+> 分析：
+>
+> - 参数：无(查所有)
+> - 返回结果类型：List<Brand>(查所有品牌)
+> - sql语句的编写：select * from xx
+
+
+
+详细过程看官方note
+
+
+
+输出belike：
+
+> [Brand{id=1, brandName='null', companyName='null', ordered=5, description='好吃不上火', status=0}, Brand{id=2, brandName='null', companyName='null', ordered=100, description='华为致力于把数字世界带入每个人、每个家庭、每个组织，构建万物互联的智能世界', status=1}, Brand{id=3, brandName='null', companyName='null', ordered=50, description='are you ok', status=1}]
+>
+> Process finished with exit code 0
+
+- brandName='null', companyName='null',**没封装上**
+  - <img src="images/image-20230918224824744.png" alt="image-20230918224824744" style="zoom:33%;" />
+  - 因为db中表字段名和实体类中属性名不一样
+
+*<u>solution：</u>*（两种
+
+法一：
+
+1. 我们可以在写sql语句时给这两个字段**起别名**，将别名定义成和属性名一致即可。
+
+   <select id="selectAll" resultType="brand">
+       select
+       id, brand_name as brandName, company_name as companyName, ordered, description, status
+       from tb_brand;
+   </select
+
+   
+
+2. 因为写一长串字段，且每写一个< select>tag都要复制一次，很麻烦-----》把这段提取出来，用的时候引用
+
+将需要复用的SQL片段抽取到 sql 标签中
+
+```xml
+<sql id="brand_column">
+	id, brand_name as brandName, company_name as companyName, ordered, description, status
+</sql>
+```
+
+
+id属性值是唯一标识，引用时也是通过该值进行引用。
+
+在原sql语句中进行引用
+
+使用 include 标签引用上述的 SQL 片段，而 refid 指定上述 SQL 片段的id值。
+
+<select id="selectAll" resultType="brand">
+    select
+    <include refid="brand_column" />
+    from tb_brand;
+</select>
+**<u>法二：</u>**
+
+使用resultMap来定义字段和属性的映射关系
+
+- id唯一标识，type映射类型
+
+```xml
+<resultMap id="brandResultMap" type="brand">
+   
+    <result column="brand_name" property="brandName"/>
+    <result column="company_name" property="companyName"/>
+</resultMap>
+
+```
+
+> ​		id：完成主键字段的映射
+> ​                column：表的列名
+> ​                property：实体类的属性名
+> ​         result：完成一般字段的映射
+> ​                column：表的列名
+> ​                property：实体类的属性名
+> 
+
+SQL语句正常编写(**替换resultMap**属性成resultMap的id)
+
+```xml
+<select id="selectAll" resultMap="brandResultMap">
+    select *
+    from tb_brand;
+</select>
+```
