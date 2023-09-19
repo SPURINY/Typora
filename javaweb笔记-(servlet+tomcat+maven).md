@@ -865,7 +865,8 @@ public class MybatisDemo2 {
 
 详细过程看官方note
 
-
+- 对照着数据库表写实体类
+- mybatisx能自动生成(alt+enter)statement即sql<img src="images/image-20230919161008680.png" alt="image-20230919161008680" style="zoom: 50%;" />
 
 输出belike：
 
@@ -888,9 +889,8 @@ public class MybatisDemo2 {
        id, brand_name as brandName, company_name as companyName, ordered, description, status
        from tb_brand;
    </select
-
    
-
+   
 2. 因为写一长串字段，且每写一个< select>tag都要复制一次，很麻烦-----》把这段提取出来，用的时候引用
 
 将需要复用的SQL片段抽取到 sql 标签中
@@ -913,6 +913,8 @@ id属性值是唯一标识，引用时也是通过该值进行引用。
     <include refid="brand_column" />
     from tb_brand;
 </select>
+
+
 **<u>法二：</u>**
 
 使用resultMap来定义字段和属性的映射关系
@@ -944,3 +946,116 @@ SQL语句正常编写(**替换resultMap**属性成resultMap的id)
     from tb_brand;
 </select>
 ```
+
+
+
+### 2.查看详情（selectById
+
+<u>mybatis提供了两种参数占位符：</u>
+
+- **#{}** ：执行SQL时，会将 #{} 占位符替换为？，将来自动设置参数值。从上述例子可以看出使用#{} 底层使用的是 PreparedStatement<img src="images/image-20230919162130619.png" alt="image-20230919162130619" style="zoom: 50%;" />
+
+- **${}** ：拼接SQL。底层使用的是 Statement，会存在`SQL注入问题`。<img src="images/image-20230919162149414.png" alt="image-20230919162149414" style="zoom:50%;" />
+- <img src="images/image-20230919163049305.png" alt="image-20230919163049305" style="zoom:50%;" />
+
+<select id="selectById"  resultMap="brandResultMap">
+    select *
+    from tb_brand where id = #{id};
+</select>
+
+> ==注意：==从上面两个例子可以看出，以后开发我们使用 #{} 参数占位符。
+
+<u>SQL语句中特殊字段处理</u>
+
+<img src="images/image-20230919162635374.png" alt="image-20230919162635374" style="zoom: 33%;" />
+
+- 小于号
+  - 转义字符			<img src="images/image-20230919162758167.png" alt="image-20230919162758167" style="zoom:33%;" />
+  - 打CD+alt+enter   <img src="images/image-20230919163005672.png" alt="image-20230919163005672" style="zoom:33%;" />
+
+### 3.多条件查询
+
+<img src="images/image-20230919174403316.png" alt="image-20230919174403316" style="zoom:50%;" />
+
+### 4.多条件，动态查询（多个条件，但是用户用了哪几个条件并不能确定）
+
+- #### < if>标签  
+
+-  `if test="status!=null"`判断参数是否有值
+
+- 即在原来statement基础上加了if判断，，其他照旧
+
+```xml
+ <select id="selectByCondition" resultMap="brandResultMap">
+        select * from tb_brand
+        where status=#{status}
+            and company_name like #{companyName}
+            and brand_name like #{brandName}
+    </select>
+    <select id="selectByDynamiteConditionIf" resultMap="brandResultMap">
+        select * from tb_brand
+        where
+        <if test="status!=null">
+            status=#{status}
+        </if>
+        <if test="companyName!=null and companyName!=''">
+            and company_name like #{companyName}
+        </if>
+        <if test="brandName!=null and brandName!=''">
+            and brand_name like #{brandName}
+        </if>
+    </select>
+```
+
+- 但是<img src="images/image-20230919181837562.png" alt="image-20230919181837562" style="zoom:33%;" />当把某条件没写时（即不满足if)，因为设计问题<img src="images/image-20230919182010765.png" alt="image-20230919182010765" style="zoom:33%;" />
+- 结果：<img src="images/image-20230919182059324.png" alt="image-20230919182059324" style="zoom:33%;" />where后直接+and+条件2了
+  - **solution**：<img src="images/image-20230919182245904.png" alt="image-20230919182245904" style="zoom: 33%;" />
+  - 利用永真的 **`1=1`** 使and即使怎样缺某个条件都合理了
+
+
+
+#### < where>标签
+
+- 解决了if标签中 and 的问题，替换where关键字（非常智能的一款tag
+
+```xml
+<select id="selectByDynamiteConditionIf" resultMap="brandResultMap">
+        select * from tb_brand
+        <!--where 1=1-->
+        <where>
+            <if test="status!=null">
+               and status=#{status}
+            </if>
+            <if test="companyName!=null and companyName!=''">
+                and company_name like #{companyName}
+            </if>
+            <if test="brandName!=null and brandName!=''">
+                and brand_name like #{brandName}
+            </if>
+        </where>
+    </select>
+```
+
+
+
+### 5.单条件，动态查询
+
+< choose>相当于switch
+
+<select id="selectByConditionSingle" resultMap="brandResultMap">
+    select *
+    from tb_brand
+    <where>
+        <choose><!--相当于switch-->
+            <when test="status != null"><!--相当于case-->
+                status = #{status}
+            </when>
+            <when test="companyName != null and companyName != '' "><!--相当于case-->
+                company_name like #{companyName}
+            </when>
+            <when test="brandName != null and brandName != ''"><!--相当于case-->
+                brand_name like #{brandName}
+            </when>
+        </choose>
+    </where>
+</select>

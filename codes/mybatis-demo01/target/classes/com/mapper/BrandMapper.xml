@@ -9,15 +9,47 @@
         <result column="brand_name" property="brandName"/>
         <result column="company_name" property="companyName"/>
     </resultMap>
+
     <select id="selectAll" resultMap="brandResultMap">
         select *
         from tb_brand;
     </select>
-<!--    <sql id="brand_column">-->
+    <select id="selectById" resultMap="brandResultMap">
+        select * from tb_brand
+        where id=#{id};
+    </select>
+    <select id="selectByCondition" resultMap="brandResultMap">
+        select * from tb_brand
+        where status=#{status}
+            and company_name like #{companyName}
+            and brand_name like #{brandName}
+    </select>
+    <select id="selectByDynamiteConditionIf" resultMap="brandResultMap">
+        select * from tb_brand
+        <!--where 1=1-->
+        <where>
+            <if test="status!=null">
+               and status=#{status}
+            </if>
+            <if test="companyName!=null and companyName!=''">
+                and company_name like #{companyName}
+            </if>
+            <if test="brandName!=null and brandName!=''">
+                and brand_name like #{brandName}
+            </if>
+        </where>
+    </select>
+
+    <!--    <sql id="brand_column">-->
 <!--        id,brand_name as brandName,company_name as companyName,ordered,description,status-->
 <!--    </sql>-->
 <!--    <select id="selectAll" resultType="com.pojo.Brand">-->
 <!--        select <include refid="brand_column" />-->
 <!--        from tb_brand;-->
 <!--    </select>-->
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_brand(brand_name, company_name, ordered, description, status)
+        values (#{brandName}, #{companyName}, #{ordered}, #{description}, #{status});
+    </insert>
 </mapper>
