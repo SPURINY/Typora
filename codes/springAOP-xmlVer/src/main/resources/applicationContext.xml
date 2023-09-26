@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="myCal" class="com.calculator.impl.MyCal"></bean>
+    <bean id="logUtis" class="com.calculator.utils.logUtis"></bean>
+    <bean id="validateAspect" class="com.calculator.utils.validateAspect"></bean>
+
+    <aop:config>
+        <aop:pointcut id="globalpoint" expression="execution(int com.calculator.impl.MyCal.*(int,int))"/>
+        <!--指定切面-@Aspect-->
+        <aop:aspect ref="logUtis">
+            <aop:pointcut id="mypointcut" expression="execution(int com.calculator.impl.MyCal.*(int,int))"/><!--切面表达式，免得复制粘贴好几行-->
+            <aop:before method="logStart" pointcut-ref="mypointcut"></aop:before>
+            <aop:after method="logEnd" pointcut="execution(int com.calculator.impl.MyCal.*(int,int))"></aop:after>
+            <aop:after-throwing method="logException" pointcut-ref="mypointcut" throwing="exception"></aop:after-throwing>
+            <aop:after-returning method="logReturn" pointcut-ref="mypointcut" returning="result"></aop:after-returning>
+        </aop:aspect>
+
+        <aop:aspect ref="validateAspect">
+            <aop:before method="logStart" pointcut-ref="globalpoint"></aop:before>
+            <aop:after method="logEnd" pointcut-ref="globalpoint"></aop:after>
+            <aop:after-throwing method="logException" pointcut-ref="globalpoint" throwing="exception"></aop:after-throwing>
+            <aop:after-returning method="logReturn" pointcut-ref="globalpoint" returning="result"></aop:after-returning>
+        </aop:aspect>
+    </aop:config>
+</beans>
