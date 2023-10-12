@@ -244,8 +244,9 @@ public class BestProcessor implements Processor{
 ![image-20230917102248712](images\image-20230917102248712.png)
 
 - 由报错可知：AppConfig类的getCpu()并没能把new的对象给传过去。
-- - <u>***@Autowired**</u>*
+  - <u>其实是没给Samsung的依赖对象Processor注入</u>
 
+- - <u>***@Autowired**</u>*
 - <img src="images\image-20230917102552600.png" alt="image-20230917102552600" style="zoom:67%;" />
 
 
@@ -257,6 +258,7 @@ public class BestProcessor implements Processor{
 - config类+注解：
 
   - `@ComponentScan(basePackages = "org.example")`
+  - 通过此注解，Spring容器会自动扫描指定基础包及其子包下的所有类，**并将其注册为Spring的Bean**。所以就不用在config类里写”@Bean“了。
 
 - bean对应的类上面加注解：`@Component`
 
@@ -315,14 +317,49 @@ public class BestProcessor implements Processor{
 
 
 - **<u>solution2：@Qualifier("bean的id")</u>**
-  - 自动装配(@Autowired)的时候
+  - 自动装配(@Autowired)的时候（
   - <img src="images\image-20230917110402193.png" alt="image-20230917110402193" style="zoom:67%;" />
   - ps：一开始写的SecondP...报错，改小写(默认bean的id)就ok了
   - <img src="C:\Users\purin\AppData\Roaming\Typora\typora-user-images\image-20230917110529776.png" alt="image-20230917110529776" style="zoom:67%;" />
+  
+  - 在接口的实现类上使用`@Qualifier`注解指定一个唯一的标识符，然后在注入时使用`@Qualifier`指定要注入的具体实现类。
+  
+    - 上面写的直接用是因为：没有人为起标识符，则该bean的id就是默认形式，自己起标识符也行
+  
+    - ```java
+      public interface MyInterface {
+          // ...
+      }
+      
+      @Component
+      @Qualifier("implementation1")
+      //自己起了一个标识
+      public class MyImplementation1 implements MyInterface {
+          // ...
+      }
+      
+      @Component
+      @Qualifier("implementation2")
+      //自己起了另一个标识
+      public class MyImplementation2 implements MyInterface {
+          // ...
+      }
+      
+      @Component
+      public class MyComponent {
+          @Autowired
+          @Qualifier("implementation1")
+          //用标识说明用的哪一个
+          private MyInterface myInterface;
+      }
+      
+      ```
+  
+      
 
 
 
-# leifengyang-Spring
+# leifengyang-Spring+chatGTP
 
 # IOC
 
@@ -336,7 +373,7 @@ public class BestProcessor implements Processor{
 
 
 
-@Autowired（自动装配）
+### @Autowired（自动装配）顺序
 
 - 先按**类型**去**容器中找对应类型**的组件
 
@@ -354,7 +391,86 @@ public class BestProcessor implements Processor{
 
 - Autowired(**required=false**)找不到就null，避免报错
 
+----
 
+### 	@Qualifier
+
+​	可以在接口的实现类上使用`@Qualifier`注解**指定一个唯一的标识符**，然后在注入时使用`@Qualifier`指定要注入的具体实现类。
+
+```java
+public interface MyInterface {
+    // ...
+}
+
+@Component
+@Qualifier("implementation1")
+public class MyImplementation1 implements MyInterface {
+    // ...
+}
+
+@Component
+@Qualifier("implementation2")
+public class MyImplementation2 implements MyInterface {
+    // ...
+}
+
+@Component
+public class MyComponent {
+    @Autowired
+    @Qualifier("implementation1")
+    private MyInterface myInterface;
+}
+```
+
+---
+
+### @Autowired
+
+`@Autowired`注解用于自动装配（自动注入）Spring容器中的Bean。通过使用`@Autowired`注解，可以方便地将依赖对象注入到需要使用它的地方，无需显式编写setter方法或构造函数。
+`@Autowired`注解有以下几种使用方式：
+
+1. 根据类型自动装配：当只有一个与需求类型匹配的Bean存在时，Spring会自动将其注入。
+
+```java
+@Autowired
+private MyBean myBean;
+```
+
+在上述示例中，`MyBean`类型的Bean将被自动注入到`myBean`字段中。
+
+2. 根据名称自动装配：当存在多个与需求类型匹配的Bean时，可以使用`@Qualifier`注解配合`@Autowired`指定要装配的Bean的名称（通过唯一标识符或限定符）。
+
+```java
+@Autowired
+@Qualifier("myBean2")
+private MyBean myBean;
+```
+
+在上述示例中，根据`@Qualifier("myBean2")`指定要注入的Bean名称为"myBean2"，从而解决了多个同类型Bean的命名歧义问题。
+
+3. 构造函数自动装配：可以在构造函数上使用`@Autowired`注解，让Spring自动按照构造函数参数类型进行装配。
+
+```java
+@Autowired
+public MyClass(MyBean myBean) {
+    // ...
+}
+```
+
+在上述示例中，`MyClass`类的构造函数使用`@Autowired`注解，Spring将自动通过构造函数将`MyBean`类型的Bean注入到构造函数中。
+`@Autowired`注解可以与`@Component`、`@Service`、`@Repository`和`@Controller`等注解一起使用，以便在组件扫描时自动装配Bean。当Spring容器实例化一个Bean，并发现有其他Bean依赖
+
+#### summary:
+
+1.一个类的成员是某个bean，自动注入
+
+2.有多个满足类型查找的bean成员(如多个实现类)和`@Qualifier`	搭配使用，点明用哪个bean
+
+3.构造方法自动装配。在创建实例时就已经完成了依赖注入。
+
+- 对比1和3：①先创建myclass实例，检查@Autowired后发现mybean，后注入mybean  ③创建实例时就完成依赖注入
+
+---
 
 
 
@@ -373,7 +489,7 @@ public class BestProcessor implements Processor{
 
 --------------------------------------------------
 
-Spring单元测试
+### Spring单元测试
 
 @ContextConfiguration（locations="")指定spring的配置文件的位置
 
@@ -385,7 +501,7 @@ Spring单元测试
 
 ------------------------
 
-泛型依赖注入：
+### 泛型依赖注入：
 
 <img src="images/image-20230923202953799.png" alt="image-20230923202953799" style="zoom: 50%;" />
 
@@ -456,6 +572,8 @@ Spring实现AOP功能，**底层就是动态代理**，比动态代理简化。
 <img src="images/image-20230926090432539.png" alt="image-20230926090432539" style="zoom: 33%;" />
 
 - 从ioc容器中拿对象，如果按类型，**用接口类型**，不能用本类
+  - AOP通常基于代理模式实现，使用接口类型可以确保获取到的对象是代理对象
+
 
 ---
 
@@ -465,7 +583,7 @@ Spring实现AOP功能，**底层就是动态代理**，比动态代理简化。
 
 <img src="images/image-20230926091231426.png" alt="image-20230926091231426" style="zoom: 33%;" />
 
-如果把切面类的注解@Aspect删掉，即没切入了，则bean还是苯类对象；但实现aop后就是动态代理对象。
+如果把切面类的注解@Aspect(告诉Spring容器这是一个切面类)删掉，即没切入了，则bean还是苯类对象；但实现aop后就是动态代理对象。
 
 
 
