@@ -909,3 +909,154 @@ Aop使用场景
     </aop:config>
 ```
 
+# jdbctemplate
+
+# 声明式事务
+
+- ```java
+   public void checkout(String isbn,String username){
+          /***
+           * 购买图书操作
+           */
+          int price=bookDao.getBookPrice(isbn);//查价格
+          bookDao.updateBalance(username,price);//-余额
+          bookDao.updateStock(isbn);//-库存
+      }
+  ```
+
+  上述业务操作，如若-库存的sql语句写错了，则没修改库存，但是账户余额已经改了--》不应该改，回滚之类的--》事务
+
+- <img src="../../../学习资料/笔记/Typora/images/image-20231021140136292.png" alt="image-20231021140136292" style="zoom:50%;" />
+
+- <img src="../../../学习资料/笔记/Typora/images/image-20231021140335030.png" alt="image-20231021140335030" style="zoom:33%;" />利用AOP
+
+
+
+- ### 快速为某个方法添加事务
+
+  - ①配置事务管理器(切面)让其进行事务控制--加入ioc容器--bean tag
+
+  - ​    控制住数据源
+
+    - 控制事务--控制连接--而从数据源获取连接connection--控制住数据源--加入属性
+
+    - ```java
+      <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+              <property name="dataSource" ref="dataSource"></property>
+          </bean>
+      ```
+
+  - ②开启基于注解的事务控制模式 依赖tx名称空间
+
+    - ```xml
+      xmlns:tx="http://www.springframework.org/schema/tx"
+      ```
+
+    - ```xml
+      <tx:annotation-driven transaction-manager="transactionManager" />
+      ```
+
+  - ③给事务方法加注解
+
+    - ```java
+      @Transactional
+          public void checkout(String isbn,String username){
+          }
+      ```
+
+    but报错`通配符的匹配很全面, 但无法找到元素 'tx:annotation-driven' 的声明`
+
+    solution：-> `xsi:schemaLocation`后加了一个`http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd`
+
+## 事务细节
+
+```
+isolation-Isolation 事务隔离级别
+
+propagation-Propagation 事务传播行为
+```
+
+```
+noRollbackFor-Class[] 哪些异常事务可以不回滚
+
+boRollbackForClassName-String[]（String全类名）
+
+rollbackFor-Class[] 哪些异常事务要回滚
+
+rollbackForClassName-String[]
+```
+
+```
+readOnly-booolean 设置事务为只读【【可以进行事务优化：加快查询速度∵不执行增删改了】】
+
+timeout-int （秒）事务超出指定执行时长后自动终止并回归
+```
+
+
+
+------
+
+
+
+### 1.timeout
+
+```java
+@Transactional(timeout = 3)
+```
+
+```java
+@Transactional(timeout = 3)
+    public void checkout(String isbn,String username){
+        /***
+         * 购买图书操作
+         */
+        try {
+            Thread.sleep(3000);//毫秒
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        。。。。。}
+```
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231021223935798.png" alt="image-20231021223935798" style="zoom:33%;" />
+
+### 2.异常分类
+
+- 运行时异常：可以不用处理【**默认都回滚**】
+- 编译时异常：必须trycatch或throws【**默认不回滚**】
+
+<u>noRollbackFor**让原来必须回滚的不回滚**</u>
+
+```java
+@Transactional(timeout = 3,noRollbackFor = {ArithmeticException.class})//让数学异常可以不回滚
+//noRollbackFor-Class[]
+    public void checkout(String isbn,String username){
+        /***
+         * 购买图书操作
+         */
+
+        int price=bookDao.getBookPrice(isbn);//查价格
+        bookDao.updateBalance(username,price);//-余额
+        bookDao.updateStock(isbn);//-库存
+        int x=10/0;/////数学异常
+
+    }
+```
+
+
+
+
+
+## 报错集
+
+### 1   No qualifying bean of type 'com.service.BookService' available
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231021134835095.png" alt="image-20231021134835095" style="zoom:33%;" />
+
+main包下的xml是我从conf下复制的，而test中`ClassPathXmlApplicationContext("ApplicationContext.xml");`用的是原来conf目录下的xml--》致使后来加上`<context:component-scan base-package="com.*" />`后也找不到bean--》最后靠在原来路径的xml加`<context:component-scan base-package="com.*" />`解决
+
+- ```
+  <context:component-scan base-package="com.*" />
+  ```
+
+  - 告诉Spring在指定的包及其子包中自动扫描并注册带有特定注解的组件。(即告诉他我用了注解没写bean标签，去读取去)
