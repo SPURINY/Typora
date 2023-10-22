@@ -926,9 +926,9 @@ Aop使用场景
 
   上述业务操作，如若-库存的sql语句写错了，则没修改库存，但是账户余额已经改了--》不应该改，回滚之类的--》事务
 
-- <img src="../../../学习资料/笔记/Typora/images/image-20231021140136292.png" alt="image-20231021140136292" style="zoom:50%;" />
+- <img src="images/image-20231021140136292.png" alt="image-20231021140136292" style="zoom:50%;" />
 
-- <img src="../../../学习资料/笔记/Typora/images/image-20231021140335030.png" alt="image-20231021140335030" style="zoom:33%;" />利用AOP
+- <img src="images/image-20231021140335030.png" alt="image-20231021140335030" style="zoom:33%;" />利用AOP
 
 
 
@@ -1018,7 +1018,7 @@ timeout-int （秒）事务超出指定执行时长后自动终止并回归
         。。。。。}
 ```
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231021223935798.png" alt="image-20231021223935798" style="zoom:33%;" />
+<img src="images/image-20231021223935798.png" alt="image-20231021223935798" style="zoom:33%;" />
 
 ### 2.异常分类
 
@@ -1049,15 +1049,15 @@ timeout-int （秒）事务超出指定执行时长后自动终止并回归
 
 - **脏读不可以出现**，其他的允许存在
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022101605592.png" alt="image-20231022101605592" style="zoom:50%;" />
+<img src="images/image-20231022101605592.png" alt="image-20231022101605592" style="zoom:50%;" />
 
 #### 2.隔离级别
 
 - 都是读事务(readonly)与写事务之间
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022102001076.png" alt="image-20231022102001076" style="zoom:50%;" />
+<img src="images/image-20231022102001076.png" alt="image-20231022102001076" style="zoom:50%;" />
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022102159704.png" alt="image-20231022102159704" style="zoom:50%;" />
+<img src="images/image-20231022102159704.png" alt="image-20231022102159704" style="zoom:50%;" />
 
 #### 3.案例--读脏数据
 
@@ -1143,20 +1143,20 @@ mysql> select @@transaction_isolation;
 
 5.读已提交
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022112140867.png" alt="image-20231022112140867" style="zoom:50%;" />
+<img src="images/image-20231022112140867.png" alt="image-20231022112140867" style="zoom:50%;" />
 
 - 第二次查询应该不变（因为另一个事务改了之后并没提交
 - 问题原因：mysql**自动提交**
 
 solution：`SET autocommit=0；关闭自动提交`
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022112533270.png" alt="image-20231022112533270" style="zoom:50%;" />
+<img src="images/image-20231022112533270.png" alt="image-20231022112533270" style="zoom:50%;" />
 
 
 
 #### 6.可重复读：何时读都一模一样
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022112920002.png" alt="image-20231022112920002" style="zoom:50%;" />
+<img src="images/image-20231022112920002.png" alt="image-20231022112920002" style="zoom:50%;" />
 
 #### 7.有事务的业务逻辑，ioc容器中保存的是这个义务逻辑的动态对象
 
@@ -1199,7 +1199,7 @@ class com.service.BookService$$EnhancerBySpringCGLIB$$b3a08004
 
   A：可以靠设置   E.G.假设用的是REQUIRED b,c和tran共享事务(共享一个数据库连接)，就是同一个事务--》完蛋一起完蛋--》∴b需要回滚
 
-  <img src="../../../学习资料/笔记/Typora/images/image-20231022120033491.png" alt="image-20231022120033491" style="zoom:50%;" />
+  <img src="images/image-20231022120033491.png" alt="image-20231022120033491" style="zoom:50%;" />
 
   
 
@@ -1207,7 +1207,7 @@ class com.service.BookService$$EnhancerBySpringCGLIB$$b3a08004
 
 **图解*************
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022132435667.png" alt="image-20231022132435667" style="zoom:50%;" />
+<img src="images/image-20231022132435667.png" alt="image-20231022132435667" style="zoom:50%;" />
 
 - **因为小事务和大事务一起提交(执行完了还没提交)，所以后边出了错能都滚蛋**
 
@@ -1270,7 +1270,7 @@ public class BookService {
 - checkout自己启动了自己的新事务后，**执行完就立马提交了**，所以就算后面大事务所在的事务回滚也不关他的事。
 - 下图为两个小事务都是_NEW
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022132652467.png" alt="image-20231022132652467" style="zoom:50%;" />
+<img src="images/image-20231022132652467.png" alt="image-20231022132652467" style="zoom:50%;" />
 
 ##### 2.1运行时异常的抛出顺序是从当前方法开始顺着调用栈向上传播
 
@@ -1363,7 +1363,7 @@ public class MulService {
 
 - 作为  _NEW,两个小事务都把mulTx挂起，自己的事务执行完立马提交了。∴执行到mulTx内的异常时，他俩不会回滚。
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022133430599.png" alt="image-20231022133430599" style="zoom:33%;" />
+<img src="images/image-20231022133430599.png" alt="image-20231022133430599" style="zoom:33%;" />
 
 #### 3.如果是REQUIRED，那timeout，noRollbackFor等等都要在大事务上写
 
@@ -1376,11 +1376,11 @@ REQUIRED:将之前事务用的connection传递给这个方法使用
 REQUIRED_NEW：这个方法直接使用新的connection
 ```
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231022140029527.png" alt="image-20231022140029527" style="zoom:33%;" />
+<img src="images/image-20231022140029527.png" alt="image-20231022140029527" style="zoom:33%;" />
 
 - 上图在BookService中直接写mulTx,无法实现创自挤的事务
 
-- <img src="../../../学习资料/笔记/Typora/images/image-20231022140218425.png" alt="image-20231022140218425" style="zoom:33%;" />
+- <img src="images/image-20231022140218425.png" alt="image-20231022140218425" style="zoom:33%;" />
 
 - 因为是调用事务方法实现的，而在本类内直接写没有动态代理对象，实现不了这种效果。
 
@@ -1392,7 +1392,7 @@ REQUIRED_NEW：这个方法直接使用新的connection
 
 ### 1   No qualifying bean of type 'com.service.BookService' available
 
-<img src="../../../学习资料/笔记/Typora/images/image-20231021134835095.png" alt="image-20231021134835095" style="zoom:33%;" />
+<img src="images/image-20231021134835095.png" alt="image-20231021134835095" style="zoom:33%;" />
 
 main包下的xml是我从conf下复制的，而test中`ClassPathXmlApplicationContext("ApplicationContext.xml");`用的是原来conf目录下的xml--》致使后来加上`<context:component-scan base-package="com.*" />`后也找不到bean--》最后靠在原来路径的xml加`<context:component-scan base-package="com.*" />`解决
 
@@ -1401,3 +1401,6 @@ main包下的xml是我从conf下复制的，而test中`ClassPathXmlApplicationCo
   ```
 
   - 告诉Spring在指定的包及其子包中自动扫描并注册带有特定注解的组件。(即告诉他我用了注解没写bean标签，去读取去)
+
+
+
