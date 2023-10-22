@@ -1043,9 +1043,350 @@ timeout-int （秒）事务超出指定执行时长后自动终止并回归
     }
 ```
 
+### 3.事务隔离级别
+
+#### 1.事务并发问题
+
+- **脏读不可以出现**，其他的允许存在
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022101605592.png" alt="image-20231022101605592" style="zoom:50%;" />
+
+#### 2.隔离级别
+
+- 都是读事务(readonly)与写事务之间
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022102001076.png" alt="image-20231022102001076" style="zoom:50%;" />
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022102159704.png" alt="image-20231022102159704" style="zoom:50%;" />
+
+#### 3.案例--读脏数据
+
+起始code：
+
+```java
+public class BookService {
+    @Autowired
+    private BookDao bookDao;
+    BookService(BookDao bookDao){
+        this.bookDao=bookDao;
+    }
+   /**隔离级别：可读未提交**/
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    public int getPrice(String isbn){
+        return bookDao.getBookPrice(isbn);
+    }
+
+}
+```
+
+```java
+@Test
+    public void test02(){
+        BookService bean = ioc.getBean(BookService.class);
+        System.out.println("ISBN-001单价"+bean.getPrice("ISBN-001"));
+    }
+```
+
+结果：`ISBN-001单价100`
+
+开启事务：
+
+```sql
+mysql> use tx
+Database changed
+mysql> start transaction;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update book set price=999 where isbn="ISBN-001";
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+```
+
+​     再执行测试test02时：`ISBN-001单价999`
+
+回滚：
+
+```sql
+mysql> rollback;
+Query OK, 0 rows affected (0.00 sec)
+```
+
+​      再执行test：`ISBN-001单价100`
+
+如果用回滚前的数据 进行一系列操作，显然是脏数据，产生一系列错误。
 
 
 
+#### 4.查看+修改隔离级别
+
+```sql
+ select @@transaction_isolation;
++-------------------------+
+| @@transaction_isolation |
++-------------------------+
+| REPEATABLE-READ         |
++-------------------------+
+1 row in set (0.00 sec)
+
+mysql> set session transaction isolation level read committ
+ed;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select @@transaction_isolation;
++-------------------------+
+| @@transaction_isolation |
++-------------------------+
+| READ-COMMITTED          |
++-------------------------+
+1 row in set (0.00 sec)
+```
+
+5.读已提交
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022112140867.png" alt="image-20231022112140867" style="zoom:50%;" />
+
+- 第二次查询应该不变（因为另一个事务改了之后并没提交
+- 问题原因：mysql**自动提交**
+
+solution：`SET autocommit=0；关闭自动提交`
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022112533270.png" alt="image-20231022112533270" style="zoom:50%;" />
+
+
+
+#### 6.可重复读：何时读都一模一样
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022112920002.png" alt="image-20231022112920002" style="zoom:50%;" />
+
+#### 7.有事务的业务逻辑，ioc容器中保存的是这个义务逻辑的动态对象
+
+```java
+public void test02(){
+        BookService bean = ioc.getBean(BookService.class);
+        //System.out.println("ISBN-001单价"+bean.getPrice("ISBN-001"));
+        System.out.println(bean.getClass());//*
+    }
+```
+
+①把BookService类中所有`@Transactional`都注释掉（即没有事务
+
+```
+class com.service.BookService
+```
+
+②取消注释掉的@Transactional
+
+```
+class com.service.BookService$$EnhancerBySpringCGLIB$$b3a08004
+```
+
+### 4.事务传播行为propagation（传播+行为）
+
+- 当事务方法被另一个事务方法调用时，必须指定事务应该如何传播
+
+  ```java
+  class A{
+  
+  tran(){//事务tran里嵌有事务b和事务c
+    b(){}
+    c(){}
+  }
+  
+  }
+  ```
+
+  Q:事务c出异常了后事务b要不要回滚
+
+  A：可以靠设置   E.G.假设用的是REQUIRED b,c和tran共享事务(共享一个数据库连接)，就是同一个事务--》完蛋一起完蛋--》∴b需要回滚
+
+  <img src="../../../学习资料/笔记/Typora/images/image-20231022120033491.png" alt="image-20231022120033491" style="zoom:50%;" />
+
+  
+
+#### 1.REQUIRED实例
+
+**图解*************
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022132435667.png" alt="image-20231022132435667" style="zoom:50%;" />
+
+- **因为小事务和大事务一起提交(执行完了还没提交)，所以后边出了错能都滚蛋**
+
+```java
+@Service
+public class MulService {
+    @Autowired
+    BookService bk;
+    @Transactional
+    public void mulTx(){
+        //@Transactional(propagation = Propagation.REQUIRED)
+        bk.checkout("ISBN-002","Tom");
+        //@Transactional(propagation = Propagation.REQUIRED)
+        bk.updatePrice("ISBN-003",99);
+    }
+}
+```
+
+```java
+@Service
+public class BookService {
+    @Autowired
+    private BookDao bookDao;
+    BookService(BookDao bookDao){
+        this.bookDao=bookDao;
+    }
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void checkout(String isbn,String username){
+        int price=bookDao.getBookPrice(isbn);//查价格
+        bookDao.updateBalance(username,price);//-余额
+        bookDao.updateStock(isbn);//-库存
+
+    }
+  
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void updatePrice(String isbn,int price){
+        bookDao.updatePrice(isbn, price);
+        int i=10/0;///异常
+    }
+
+}
+```
+
+```java
+@Test
+    public void test03(){
+        MulService bean = ioc.getBean(MulService.class);
+        bean.mulTx();
+    }
+```
+
+结果：因为updatePrice异常，打包滚蛋都回滚了，数据库数据并没有被修改。
+
+- **历史遗留问题**：第一次的时候异常语句写的sout(10/0),额，，没有都回滚，数据库还是被修改了，问了chatgpt说的也是前后矛盾，，说什么没被捕获之类的，但好像sout(10/0)和int i=10/0都是runtimeException，，
+
+#### 2.REQUIRED_NEW实例
+
+##### 图解
+
+- checkout自己启动了自己的新事务后，**执行完就立马提交了**，所以就算后面大事务所在的事务回滚也不关他的事。
+- 下图为两个小事务都是_NEW
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022132652467.png" alt="image-20231022132652467" style="zoom:50%;" />
+
+##### 2.1运行时异常的抛出顺序是从当前方法开始顺着调用栈向上传播
+
+```java
+class Test {
+    public static void main(String[] args) {
+        doStuff();
+    }
+    
+    public static void doStuff() {
+        doMoreStuff();
+    }
+    
+    public static void doMoreStuff() {
+        System.out.println(10/0);
+    }
+}
+
+```
+
+方法调用时main->doStuff->doMoreStuff
+
+RuntimeException的抛出顺序是从当前方法开始**顺着调用栈向上传播**
+
+1. `doMoreStuff()` 方法中有一个算术操作 `System.out.println(10/0)`，它会抛出一个 `ArithmeticException`。
+
+   **但没捕获没处理**，异常开始向上传播，离开 `doMoreStuff()` 方法，并返回到 `doStuff()` 方法。
+
+2. 由于 `doStuff()` 方法没**有捕获这个异常，它会继续向上传播**，离开 `doStuff()` 方法，并返回到 `main` 方法。
+
+3. `main` 方法也没有捕获异常，所以异常继续向上传播，离开 `main` 方法。
+
+4. 当异常离开 `main` 方法时，程序终止，并在控制台打印异常信息和堆栈跟踪。
+
+##### 2.2案例
+
+①
+
+```java
+@Service
+public class MulService {
+   ........
+    @Transactional
+    public void mulTx(){
+        //REQUIRED_NEW
+        bk.checkout("ISBN-002","Tom");
+        //REQUIRED
+        bk.updatePrice("ISBN-003",99);//有算数异常
+    }
+}
+```
+
+- checkout把numTx挂起，自己另开了一个事务，**执行完立马给自己提交了**，然后mulTx又开启，mulTx事务的大家**一起提交**。所以在updatePrice和mulTx一起滚蛋(整个事务内的)的时候，不管他事。
+
+②
+
+```java
+@Service
+public class MulService {
+   ........
+    @Transactional
+    public void mulTx(){
+        //REQUIRED
+        bk.checkout("ISBN-002","Tom");
+        //REQUIRED_NEW
+        bk.updatePrice("ISBN-003",99);//有算术异常
+    }
+}
+```
+
+- updatePrice()中的异常未被捕获，继续往上找到mulTx()导致这个事务一起完蛋(**都没提交**,∵大事务还没执行完)，所以在这个事务中(REQUIRED)的checkout()会一起回滚。
+
+③
+
+```java
+@Service
+public class MulService {
+   ........
+    @Transactional
+    public void mulTx(){
+        //REQUIRED_NEW
+        bk.checkout("ISBN-002","Tom");
+        //REQUIRED_NEW
+        bk.updatePrice("ISBN-003",99);
+       
+       int i=10/0;//数学异常（在mulTx事务内
+    }
+}
+```
+
+- 作为  _NEW,两个小事务都把mulTx挂起，自己的事务执行完立马提交了。∴执行到mulTx内的异常时，他俩不会回滚。
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022133430599.png" alt="image-20231022133430599" style="zoom:33%;" />
+
+#### 3.如果是REQUIRED，那timeout，noRollbackFor等等都要在大事务上写
+
+- 小事务相当于继承的大事务的
+
+#### 4.补充（代理对象）
+
+```
+REQUIRED:将之前事务用的connection传递给这个方法使用
+REQUIRED_NEW：这个方法直接使用新的connection
+```
+
+<img src="../../../学习资料/笔记/Typora/images/image-20231022140029527.png" alt="image-20231022140029527" style="zoom:33%;" />
+
+- 上图在BookService中直接写mulTx,无法实现创自挤的事务
+
+- <img src="../../../学习资料/笔记/Typora/images/image-20231022140218425.png" alt="image-20231022140218425" style="zoom:33%;" />
+
+- 因为是调用事务方法实现的，而在本类内直接写没有动态代理对象，实现不了这种效果。
+
+  [^]: 事务细节3.7：bean.getClass()-》class com.service.BookService$$EnhancerBySpringCGLIB$$b3a08004
+
+  
 
 ## 报错集
 
